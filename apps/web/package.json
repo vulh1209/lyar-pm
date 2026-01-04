@@ -1,0 +1,44 @@
+{
+  "name": "@lyar/web",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "bun run server.ts",
+    "dev:next": "next dev --turbopack",
+    "build": "next build",
+    "start": "NODE_ENV=production bun run server.ts",
+    "lint": "eslint",
+    "db:generate": "drizzle-kit generate",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio"
+  },
+  "dependencies": {
+    "@lyar/types": "workspace:*",
+    "@lyar/utils": "workspace:*",
+    "better-sqlite3": "^11.9.1",
+    "drizzle-orm": "^0.44.2",
+    "next": "16.1.1",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "ws": "^8.18.0",
+    "zustand": "^5.0.5"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@types/ws": "^8.18.1",
+    "drizzle-kit": "^0.31.1",
+    "eslint": "^9",
+    "eslint-config-next": "16.1.1",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  },
+  "trustedDependencies": [
+    "sharp",
+    "unrs-resolver",
+    "better-sqlite3"
+  ]
+}

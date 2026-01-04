@@ -4,6 +4,18 @@
 # BMAD outputs
 _bmad-output/
 
+# Lyar PM local data
+.lyar/
+apps/web/.lyar/
+
+# Drizzle
+drizzle/
+apps/web/drizzle/
+
+# Next.js
+.next/
+apps/web/.next/
+
 # Dependencies
 node_modules/
 
@@ -39,3 +51,8 @@ coverage/
 # Cache
 .cache/
 *.tsbuildinfo
+
+# Lock files (use bun.lock only)
+package-lock.json
+yarn.lock
+pnpm-lock.yaml

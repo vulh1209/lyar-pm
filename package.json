@@ -1,12 +1,19 @@
 {
   "name": "lyar-pm",
-  "module": "index.ts",
-  "type": "module",
+  "version": "0.1.0",
   "private": true,
-  "devDependencies": {
-    "@types/bun": "latest"
+  "type": "module",
+  "workspaces": ["apps/*", "libs/*"],
+  "scripts": {
+    "dev": "bun run --filter @lyar/web dev",
+    "build": "bun run --filter @lyar/web build",
+    "test": "bun test",
+    "lint": "bun run --filter '*' lint",
+    "db:push": "bun run --filter @lyar/web db:push",
+    "db:studio": "bun run --filter @lyar/web db:studio"
   },
-  "peerDependencies": {
+  "devDependencies": {
+    "@types/bun": "latest",
     "typescript": "^5"
   }
 }
