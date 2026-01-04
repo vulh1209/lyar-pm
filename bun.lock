@@ -13,6 +13,7 @@
       "name": "@lyar/web",
       "version": "0.1.0",
       "dependencies": {
+        "@lyar/prompts": "workspace:*",
         "@lyar/types": "workspace:*",
         "@lyar/utils": "workspace:*",
         "better-sqlite3": "^11.9.1",

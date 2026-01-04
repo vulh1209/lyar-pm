@@ -1,65 +1,118 @@
-import Image from "next/image";
+"use client";
+
+import { useState, useEffect } from "react";
+import { ProjectList } from "@/components/projects";
+import { OnboardingWizard } from "@/components/onboarding";
+import { useProjects } from "@/hooks";
+import type { Project } from "@/lib/db";
 
 export default function Home() {
+  const { projects, loading, createProject } = useProjects();
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [showOnboarding, setShowOnboarding] = useState(false);
+
+  // Show onboarding for first-time users
+  useEffect(() => {
+    if (!loading && projects.length === 0) {
+      // Check if user has seen onboarding before
+      const hasSeenOnboarding = localStorage.getItem("lyar_onboarding_complete");
+      if (!hasSeenOnboarding) {
+        setShowOnboarding(true);
+      }
+    }
+  }, [loading, projects.length]);
+
+  const handleOnboardingComplete = async (data: {
+    name: string;
+    description: string;
+    path: string;
+  }) => {
+    localStorage.setItem("lyar_onboarding_complete", "true");
+    setShowOnboarding(false);
+
+    // Create the project
+    const project = await createProject({
+      name: data.name,
+      description: data.description,
+      path: data.path,
+    });
+
+    if (project) {
+      // Navigate to project
+      window.location.href = `/projects/${project.id}`;
+    }
+  };
+
+  const handleSkipOnboarding = () => {
+    localStorage.setItem("lyar_onboarding_complete", "true");
+    setShowOnboarding(false);
+  };
+
+  if (selectedProject) {
+    window.location.href = `/projects/${selectedProject.id}`;
+    return null;
+  }
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <div className="min-h-screen">
+      {/* Onboarding Wizard */}
+      {showOnboarding && (
+        <OnboardingWizard
+          onComplete={handleOnboardingComplete}
+          onSkip={handleSkipOnboarding}
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+      )}
+
+      {/* Header */}
+      <header className="border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
+                <span className="text-primary-foreground font-bold text-sm">L</span>
+              </div>
+              <span className="font-semibold text-lg">Lyar PM</span>
+            </div>
+            <nav className="flex items-center gap-4">
+              <button
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                onClick={() => setShowOnboarding(true)}
+              >
+                Help
+              </button>
+              <button className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                Settings
+              </button>
+            </nav>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Hero Section */}
+        <div className="text-center mb-12 py-8">
+          <h1 className="text-4xl font-bold mb-4">
+            Virtual Project Manager
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            Build software from ideas without coding. Describe what you want,
+            and Lyar PM will handle the rest.
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+
+        {/* Projects Section */}
+        <ProjectList onSelectProject={setSelectedProject} />
       </main>
+
+      {/* Footer */}
+      <footer className="border-t border-border mt-auto">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="text-center text-sm text-muted-foreground">
+            <p>Lyar PM - Open Source Virtual Project Manager</p>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
